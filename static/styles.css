@@ -1,0 +1,325 @@
+/* static/styles.css */
+/* 全局重置与基础样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+body {
+    background: #f3f4f6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 5vh;
+}
+
+/* 游戏主容器 */
+#game-container {
+    width: 90%;
+    max-width: 600px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    padding: 2.5rem;
+    margin-top: 3rem;
+    transition: all 0.3s ease;
+}
+
+/* 标题样式 */
+h1 {
+    color: #1f2937;
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 2.5rem;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+}
+
+/* 游戏区域通用样式 */
+#game {
+    display: none;
+}
+
+/* 开始按钮 */
+#start-btn {
+    display: block;
+    width: 100%;
+    padding: 1.2rem;
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: #ffffff;
+    background: #3b82f6;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.3s ease;
+}
+
+#start-btn:hover {
+    background: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* 单词显示样式 */
+#word {
+    color: #000; /* 黑色字体 */
+    font-size: 2.5rem; /* 放大字号 */
+    text-align: center;
+    margin: 2rem 0;
+    padding: 1.5rem;
+    position: relative;
+    /* 蓝色描边效果 */
+    text-shadow: 
+        -1px -1px 0 #3b82f6,
+        1px -1px 0 #3b82f6,
+        -1px 1px 0 #3b82f6,
+        1px 1px 0 #3b82f6;
+}
+
+/* 选项容器-2x2网格布局 */
+#options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 两列布局 */
+    gap: 1.2rem;
+    margin: 2rem 0;
+}
+
+#options button {
+    padding: 1.2rem;
+    font-size: 1.1rem;
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 80px; /* 保证按钮高度统一 */
+}
+
+#options button:hover {
+    border-color: #3b82f6;
+    background: #f0f4ff;
+    transform: translateY(-2px);
+}
+
+/* 得分显示 */
+#score {
+    color: #3b82f6;
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* 结果提示 */
+#result {
+    font-size: 1.1rem;
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.correct {
+    color: #10b981;
+    background: #ecfdf5;
+}
+
+.wrong {
+    color: #ef4444;
+    background: #fef2f2;
+}
+
+/* 响应式设计 */
+@media (max-width: 640px) {
+    #game-container {
+        width: 95%;
+        padding: 1.5rem;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    #word {
+        font-size: 2rem; /* 移动端适当缩小字号 */
+        text-shadow: 
+            -0.5px -0.5px 0 #3b82f6,
+            0.5px -0.5px 0 #3b82f6,
+            -0.5px 0.5px 0 #3b82f6,
+            0.5px 0.5px 0 #3b82f6;
+    }
+
+    #options {
+        grid-template-columns: 1fr; /* 移动端单列布局 */
+    }
+
+    #options button {
+        min-height: auto;
+        padding: 1rem;
+    }
+}
+
+/* 正确选项样式 */
+button.correct {
+    background: #d1fae5 !important;
+    border-color: #10b981 !important;
+    color: #065f46 !important;
+    animation: pulse-correct 0.6s ease;
+}
+
+/* 错误选项样式 */
+button.wrong {
+    background: #fee2e2 !important;
+    border-color: #ef4444 !important;
+    color: #7f1d1d !important;
+    animation: pulse-wrong 0.4s ease;
+}
+
+/* 正确选项动画 */
+@keyframes pulse-correct {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* 错误选项动画 */
+@keyframes pulse-wrong {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    50% { transform: translateX(6px); }
+    100% { transform: translateX(0); }
+}
+
+/* 同时修改结果提示样式 */
+#result {
+    margin-top: 1.5rem;
+}
+
+/* 结果页面样式 */
+#result-container {
+    width: 90%;
+    max-width: 800px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    padding: 2.5rem;
+    margin: 2rem auto;
+}
+
+.score-box {
+    text-align: center;
+    margin: 2rem 0;
+    padding: 2rem;
+    background: #f8fafc;
+    border-radius: 12px;
+}
+
+.score-label {
+    color: #64748b;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.score-number span {
+    color: #3b82f6;
+    font-size: 3.5rem;
+    font-weight: 700;
+}
+
+.wrong-answers h2 {
+    color: #ef4444;
+    margin: 2rem 0 1rem;
+    font-size: 1.5rem;
+}
+
+.wrong-item {
+    padding: 1.2rem;
+    margin: 1rem 0;
+    border: 2px solid #fee2e2;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.word {
+    font-weight: 600;
+    color: #1e293b;
+    min-width: 120px;
+}
+
+.user-answer {
+    color: #ef4444;
+    text-decoration: line-through;
+    margin-right: 1rem;
+}
+
+.correct-answer {
+    color: #10b981;
+    font-weight: 500;
+}
+
+.arrow {
+    color: #94a3b8;
+    margin: 0 1rem;
+}
+
+.retry-btn {
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    text-align: center;
+    background: #3b82f6;
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    margin-top: 2rem;
+    transition: background 0.3s ease;
+}
+
+.retry-btn:hover {
+    background: #2563eb;
+}
+
+@media (max-width: 640px) {
+    .wrong-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .answers {
+        margin-top: 0.5rem;
+    }
+}
+
+/* 在styles.css添加 */
+.perfect-score .score-number span {
+    background: linear-gradient(45deg, #ff6b6b, #3b82f6, #10b981);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: rainbow 2s ease-in-out infinite;
+}
+
+@keyframes rainbow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* 修改结果容器 */
+#result-container.perfect {
+    background: linear-gradient(135deg, #f8fafc 0%, #f0f4ff 100%);
+    border: 2px solid #3b82f6;
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    from { box-shadow: 0 0 10px rgba(59, 130, 246, 0.3); }
+    to { box-shadow: 0 0 30px rgba(59, 130, 246, 0.6); }
+}

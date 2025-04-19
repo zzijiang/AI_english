@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英语词汇挑战</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <!-- 新增的外层容器 -->
+    <div id="game-container">
+        <h1>英语词汇挑战</h1>
+        <!-- 开始游戏按钮 -->
+        <button id="start-btn">开始游戏</button>
+        <!-- 游戏区域 -->
+        <div id="game" style="display: none;">
+            <h2 id="word"></h2>
+            <div id="options"></div>
+            <p id="result"></p>
+            <p>得分: <span id="score">0</span>/10</p>
+        </div>
+    </div> <!-- 结束外层容器 -->
+
+    <script>
+        // 初始化变量
+        let score = 0;  // 用户得分
+        let currentQuestion = 0;  // 当前题目序号
+        const totalQuestions = 10;  // 总题数
+
+        // 监听“开始游戏”按钮的点击事件
+        document.getElementById('start-btn').addEventListener('click', startGame);
+
+        // 开始游戏
+        function startGame() {
+            // 隐藏“开始游戏”按钮
+            document.getElementById('start-btn').style.display = 'none';
+            // 显示游戏区域
+            document.getElementById('game').style.display = 'block';
+            // 获取第一道题目
+            fetchQuestion();
+        }
+
+        // 获取题目
+        function fetchQuestion() {
+            // 清除结果信息和样式
+            const resultElement = document.getElementById('result');
+            resultElement.innerText = '';
+            resultElement.className = '';
+            
+            // 启用选项按钮
+            const options = document.querySelectorAll('#options button');
+            options.forEach(btn => {
+                btn.disabled = false;
+                btn.classList.remove('correct', 'wrong');
+            });
+
+            fetch('/get_question')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('word').innerText = data.word;
+                    const optionsDiv = document.getElementById('options');
+                    optionsDiv.innerHTML = '';
+                    
+                    data.options.forEach(option => {
+                        const button = document.createElement('button');
+                        button.innerText = option;
+                        button.addEventListener('click', () => checkAnswer(option, data.correct_answer));
+                        optionsDiv.appendChild(button);
+                    });
+                });
+        }
+
+        let wrongAnswers = []; // 新增：存储错题列表
+
+        // 检查答案
+        function checkAnswer(userAnswer, correctAnswer) {
+            const options = document.querySelectorAll('#options button');
+            
+            fetch('/check_answer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ answer: userAnswer, correct_answer: correctAnswer })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // 清除所有样式
+                options.forEach(btn => {
+                    btn.classList.remove('correct', 'wrong');
+                    btn.disabled = true; // 禁用按钮防止重复点击
+                });
+
+                // 标记正确和错误选项
+                options.forEach(btn => {
+                    if (btn.innerText === correctAnswer) {
+                        btn.classList.add('correct');
+                    }
+                    if (btn.innerText === userAnswer && !data.is_correct) {
+                        btn.classList.add('wrong');
+                    }
+                });
+
+                // 原有得分逻辑
+                if (data.is_correct) {
+                    score++;
+                    document.getElementById('result').className = 'correct';
+                    document.getElementById('result').innerText = '正确！✓';
+                } else {
+                    const currentWord = document.getElementById('word').innerText;
+                    wrongAnswers.push(`${currentWord}|${userAnswer}|${correctAnswer}`);
+                    document.getElementById('result').className = 'wrong';
+                    document.getElementById('result').innerText = `错误！✗ 正确答案：${correctAnswer}`;
+                }
+
+                document.getElementById('score').innerText = score;
+                currentQuestion++;
+
+                // 延迟加载下一题
+                setTimeout(() => {
+                    if (currentQuestion < totalQuestions) {
+                        fetchQuestion();
+                    } else {
+                        endGame();
+                    }
+                }, 1500); // 给1.5秒查看结果
+            });
+        }
+
+        // 结束游戏
+        function endGame() {
+            // 构建查询参数
+            const params = new URLSearchParams();
+            params.append('score', score);
+            wrongAnswers.forEach(w => params.append('wrong', w));
+            
+            // 跳转到结果页面
+            window.location.href = `/result?${params.toString()}`;
+        }
+    </script>
+</body>
+</html>

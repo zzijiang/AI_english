@@ -1,0 +1,116 @@
+<!-- templates/result.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测验结果</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+    <div id="result-container" class="{% if score|int == 10 %}perfect{% endif %}">
+        <h1>测验结果</h1>
+        
+        <!-- 得分展示 -->
+        <div class="score-box {% if score|int == 10 %}perfect-score{% endif %}">
+            <div class="score-label">最终得分</div>
+            <div class="score-number">
+                <span>{{ score }}</span>/{{ total }}
+            </div>
+        </div>
+
+        <!-- 错题展示 -->
+        {% if wrong_answers %}
+        <div class="wrong-answers">
+            <h2>错题回顾</h2>
+            <div class="wrong-list">
+                {% for item in wrong_answers %}
+                <div class="wrong-item">
+                    <div class="word">{{ item.word }}</div>
+                    <div class="answers">
+                        <span class="user-answer">{{ item.user_answer }}</span>
+                        <span class="arrow">→</span>
+                        <span class="correct-answer">{{ item.correct_answer }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- 返回按钮 -->
+        <a href="/" class="retry-btn">再试一次</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const score = parseInt("{{ score }}");
+            
+            if(score === 10) {
+                // 基础烟花
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+        
+                // 创建多个烟花效果
+                const count = 200;
+                const defaults = {
+                    origin: { y: 0.7 }
+                };
+        
+                function fire(particleRatio, opts) {
+                    confetti(Object.assign({}, defaults, opts, {
+                        particleCount: Math.floor(count * particleRatio)
+                    }));
+                }
+        
+                // 多彩烟花序列
+                fire(0.25, {
+                    spread: 26,
+                    startVelocity: 55,
+                });
+        
+                fire(0.2, {
+                    spread: 60,
+                });
+        
+                fire(0.35, {
+                    spread: 100,
+                    decay: 0.91,
+                    scalar: 0.8
+                });
+        
+                fire(0.1, {
+                    spread: 120,
+                    startVelocity: 25,
+                    decay: 0.92,
+                    scalar: 1.2
+                });
+        
+                fire(0.1, {
+                    spread: 120,
+                    startVelocity: 45,
+                });
+        
+                // 添加心形特效
+                setTimeout(() => {
+                    const heartConfetti = confetti.shapeFromPath({
+                        path: 'M167 318c0-6 4-10 10-10 6 0 10 4 10 10 0 6-4 10-10 10-6 0-10-4-10-10z m-46-94c0-6 4-10 10-10 6 0 10 4 10 10 0 6-4 10-10 10-6 0-10-4-10-10z m92 0c0-6 4-10 10-10 6 0 10 4 10 10 0 6-4 10-10 10-6 0-10-4-10-10z M239 184c0 0-26-28-63-28-38 0-66 28-66 28s28-26 66-26c37 0 63 26 63 26z'
+                    });
+                    
+                    confetti({
+                        shapes: [heartConfetti],
+                        scalar: 2,
+                        particleCount: 20,
+                        spread: 100,
+                        origin: { y: 0.8 }
+                    });
+                }, 500);
+            }
+        });
+        </script>
+</body>
+</html>
